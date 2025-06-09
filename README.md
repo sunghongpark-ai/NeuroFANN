@@ -9,7 +9,7 @@ Dementia diagnosis relies on identifying neuropathological features, such as bet
 
 <b>Keywords</b>: Dementia; Neuropathological subtype; Plasma proteomic profile; Protein-protein interaction; Biologically functional annotation; Graph-based machine learning.
 
-![Abstract](https://github.com/user-attachments/assets/827e62a4-f427-4b9e-804a-e4a6eed2be04)
+![Image](https://github.com/user-attachments/assets/84bfe8d7-1e8b-44b1-b100-35b05ca35932)
 
 ---
 
