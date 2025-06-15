@@ -41,6 +41,15 @@ The plasma samples were profiled by the Olink Target 96 Neurology and Olink Targ
 ### Overall process
 This study begins with the identification of plasma proteins associated with neuropathological subtypes of dementia through differential expression analysis (DEA), followed by the clustering of these protein biomarkers based on their functional annotations. Next, NeuroFANN is used to predict individual risks for dementia subtypes. The model projects the independent effects of proteins that passed the DEA criteria onto the PPI network, capturing synergetic effects that reflect the global properties of PPIs. The synergetic effects are then aggregated within predefined clusters, reflecting the functional annotations of plasma protein biomarkers.
 
+<b>Differential expression analysis</b>
+- The method identifies differentially expressed proteins (DEPs) by comparing plasma protein expression between neuropathological subtype-positive and subtype-negative groups using the ‘limma’ R/Bioconductor package. The union of DEPs across all subtypes serves as candidate plasma biomarkers.
+
+<b>Biologically informed protein clustering</b>
+- This approach clusters biomarkers based on biological functionality. It involves first identifying Gene Ontology (GO) groups significantly associated with biomarkers via DAVID's Functional Annotation Clustering. Subsequently, hierarchical clustering groups biomarkers according to shared functional annotations using the Jaccard distance metric and Ward’s linkage method.
+
+<b>Functionally annotated neural network</b>
+- NeuroFANN captures biomarker interactions and functional importance through three steps: (1) network propagation of independent biomarker effects via a PPI network, (2) aggregation of propagated signals at the cluster level using trainable, protein-specific importance weights, and (3) prediction of individual risks for neuropathological subtypes using logistic regression on aggregated cluster signals.
+
 ### Code description
 
 <b>MATLAB (version R2024b)</b>
