@@ -16,40 +16,30 @@ Dementia diagnosis relies on identifying neuropathological features, such as bet
 ## Data description
 
 ### Study participants
-The dataset used in this study was sourced from the UK Biobank (UKB), which recruited over 500,000 participants aged 39–70 between 2006 and 2010, with long-term monitoring of their health outcomes (additional details can be at: https://biobank.ndph.ox.ac.uk/showcase/). From the UKB participants, 906 individuals with complete data on four neurodegenerative biomarkers (Aβ42/40, GFAP, NfL, and pTau181) were selected for the analytical cohort. Given that higher levels of GFAP, NfL, and pTau indicate increased risk, while lower levels of Aβ42/40 signify greater risk, the reciprocal of Aβ42/40 (Aβ40/42) was used in this study to maintain consistency in predictions. For each participant, the positivity and negativity for the biomarkers were determined using the ‘cutoff’ implemented in R (https://github.com/choisy/cutoff). Of the participants, 783 had follow-up data on the biomarkers, with an average follow-up duration of 3.25 years, enabling the assessment of longitudinal changes. The demographic characteristics of the study participants are presented as below.
+We recruited participants from the Biobank Innovations for chronic Cerebrovascular disease With ALZheimer’s disease Study (BICWALZS) at Ajou University Hospital (Suwon, Republic of Korea) [[Paper](https://doi.org/10.30773/pi.2021.0335)]. The neuropathological subtypes of participants were determined by clinicians based on neuroimaging, where Aβ-positivity was determined by 18F-flutemetamol PET, and positivity for MTA and WMH was determined by 3.0 Tesla MRI. We divided the participants into the discovery and validation cohorts, where the validation cohort included participants with 2-year follow-up on cognitive assessments, and the participants with only baseline information were included in the discovery cohort. The demographic and clinical characteristics of study participants are presented in Table below.
 
-|      Characteristics     | Total participants (N=906) | Follow-up participants (N=783) |            |          |
-|:------------------------:|:--------------------------:|:------------------------------:|:----------:|:--------:|
-|                          |                            |            Baseline            |  Follow-up | P-value* |
-|      Female, No. (%)     |         491 (54.2)         |          422   (53.9)          |            |     –    |
-|   Education, med. (IQR)  |          7 (3–17)          |           7   (3–17)           |            |     –    |
-|    Age, med. (IQR), yr   |         58 (54–64)         |           58 (53–64)           | 61 (57–67) |  <0.0001 |
-|  Aβ-positivity, No. (%)  |         192 (21.2)         |           162 (20.7)           | 265 (33.8) |  <0.0001 |
-| GFAP-positivity, No. (%) |         175 (19.3)         |           155 (19.8)           | 205 (26.2) |  0.0027  |
-|  NfL-positivity, No. (%) |         227 (25.1)         |           189 (24.1)           | 236 (30.1) |  0.0075  |
-| pTau-positivity, No. (%) |         212 (23.4)         |           182 (23.2)           | 163 (20.8) |   0.247  |
+|      Characteristics     | Total   participants (N = 475) | Discovery cohort   (N = 348) | Validation cohort   (N = 127) | P-value |
+|:------------------------:|:------------------------------:|:----------------------------:|:-----------------------------:|:-------:|
+|   Age, median (IQR), yr  |           73 (67–77)           |          72 (67–77)          |           73 (67–78)          |  0.6343 |
+|      Female, No. (%)     |           332 (69.9)           |          241 (69.3)          |           91 (71.7)           |  0.6146 |
+|    MMSE, median (IQR)    |           24 (20–27)           |          24 (20–27)          |           24 (22–27)          |  0.0525 |
+|   CDR-SB, median (IQR)   |          2.5 (1.5–4.0)         |         2.5 (1.5–4.5)        |         2.0 (1.5–3.0)         |  0.0921 |
+|     GDS, median (IQR)    |             3 (3–4)            |            3 (3–4)           |            3 (3–4)            |  0.2841 |
+| APOE ε2 carrier, No. (%) |            68 (14.3)           |           48 (13.8)          |           20 (15.7)           |  0.5912 |
+| APOE ε4 carrier, No. (%) |           129 (27.2)           |           91 (26.1)          |           38 (29.9)           |  0.4144 |
+|  Aβ-positivity, No. (%)  |           142 (29.9)           |          100 (28.7)          |           42 (33.1)           |  0.3621 |
+|  MTA-positivity, No. (%) |           106 (22.3)           |           81 (23.3)          |           25 (19.7)           |  0.4065 |
+|  WMH-positivity, No. (%) |           172 (36.2)           |          121 (34.8)          |           51 (40.2)           |  0.2806 |
 
 ### Plasma samples
-The plasma samples of participants were profiled by the Olink Platform, where 1,463 proteins were totally assayed (further details can be found at: https://olink.com/). For the initial data for protein expression, proteins with a missing frequency greater than 5% were excluded, and missing values were estimated using the k-nearest neighbor method. Subsequently, protein expression levels were standardized through Z-score normalization and then scaled using the logistic function.
+The plasma samples were profiled by the Olink Target 96 Neurology and Olink Target 48 Cytokine panels. The former comprises 92 established assays associated with neurobiological diseases, while the latter includes 45 selected assays highly relevant to inflammatory processes, more details can be found at: https://olink.com, and the assayed proteins are listed in Supplementary Table S1. The raw data for protein expression underwent quality control (QC) through both internal and external controls in the panels. We excluded proteins with missing frequency over 10% and imputed missing values by using the k-nearest neighbor method. Subsequently, the protein expression values were standardized by using Z-score normalization and then transformed by the logistic function for scaling.
 
 ---
 
 ## Model implementation
 
 ### Overall process
-Given that $d$ and $n$ are the numbers of target proteins and study participants, respectively, the data matrix for the independent effects, denoted by $X\in\mathbb{R}^{d×n}$, consists of the preprocessed expression data for the target proteins. PPIxGPN first extracts the synergetic effects of target proteins, denoted as $Z\in\mathbb{R}^{d×n}$, by propagating the independent effects onto the PPI network $W\in\mathbb{R}^{d×d}$. In this process, the propagation parameter $ϕ\in\mathbb{R}^{d}$ is applied to the proteins for individually controlling the intensity of propagation. Subsequently, the synergetic effect is applied to the estimation parameter, denoted as $Θ_{\*}\in\mathbb{R}^{d}$ (${\*}$: Aβ, GFAP, NfL, pTau), and the individual risks for neurodegenerative biomarkers, denoted as $P_{\*}\in\mathbb{R}^{n}$, are derived. The proposed method encompasses two-layered model architecture, including two parameter sets, $ϕ$ and $Θ_{\*}$, which are optimized by comparing the predicted risk $P_{\*}$ with the real diagnosis, denoted as $Y_{\*}\in\mathbb{R}^{n}$. Notations for PPIxGPN are summarized as below.
-
-| Notation                  | Description                             |
-| :-----------------------: | :-------------------------------------: |
-| $d$                       | Number of study participants            |
-| $n$                       | Number of target proteins               |
-| $X\in\mathbb{R}^{d×n}$    | Independent effect of target proteins   |
-| $Z\in\mathbb{R}^{d×n}$    | Synergetic effect of target proteins    |
-| $ϕ\in\mathbb{R}^{d}$      | Propagation parameter set of PPIxGPN    |
-| $Θ_{\*}\in\mathbb{R}^{d}$ | Estimation parameter set of PPIxGPN     |
-| $P_{\*}\in\mathbb{R}^{n}$ | Predicted risk set for biomarkers       |
-| $Y_{\*}\in\mathbb{R}^{n}$ | Real diagnosis label set for biomarkers |
-| ${\*}$                    | Aβ, GFAP, NfL, pTau                     |
+This study begins with the identification of plasma proteins associated with neuropathological subtypes of dementia through differential expression analysis (DEA), followed by the clustering of these protein biomarkers based on their functional annotations. Next, NeuroFANN is used to predict individual risks for dementia subtypes. The model projects the independent effects of proteins that passed the DEA criteria onto the PPI network, capturing synergetic effects that reflect the global properties of PPIs. The synergetic effects are then aggregated within predefined clusters, reflecting the functional annotations of plasma protein biomarkers.
 
 ### Code description
 
@@ -58,24 +48,21 @@ Given that $d$ and $n$ are the numbers of target proteins and study participants
   - MATLAB (version R2024b)
 
 - <b>Main code</b>
-  - PPIxGPN
-
+  - NeuroFANN
+  
 - <b>Data setting</b>
   - Xdata: independent effect of target proteins
   - Ydata: real diagnosis label set for biomarkers
   - Split two data into train/valid/test sets
 
 - <b>Parameter setting</b>
-  - Uppi: propagation parameter
-  - Babt, Bgfa, Bnfl, Btau: estimation parameters
+  - Uprot: propagation parameter
+  - Aclus: importance parameter
+  - Babt, Bmta, Bwmh: prediction parameters
 
 - <b>Model parameter</b>
-  - epoch: maximum number of epoch
-  - rate: learning rate
-  - gamma: regularization coefficient
-
-- <b>Model implementation</b>
-  - Model training
-  - Risk estimation
+  - MaxEpoch: maximum number of epoch
+  - LearnRate: learning rate
+  - RegCoeff: regularization coefficient
 
 ---
