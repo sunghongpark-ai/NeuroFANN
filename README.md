@@ -1,6 +1,6 @@
 ---
 
-# NeuroFANN: identification of neuropathological subtypes of dementia with plasma proteins by using functionally annotated neural network
+# NeuroFANN: identification of neuropathological subtypes in dementia with plasma proteins by using functionally annotated neural network
 
 ---
 
